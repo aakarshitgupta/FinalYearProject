@@ -1,0 +1,12 @@
+{
+  "name": "fake-news-xai-mern",
+  "private": true,
+  "version": "1.0.0",
+  "description": "MERN-style web app for explainable fake news detection.",
+  "scripts": {
+    "dev": "npm --prefix backend run dev",
+    "client": "npm --prefix frontend run dev",
+    "server": "npm --prefix backend run dev",
+    "build": "npm --prefix frontend run build"
+  }
+}
