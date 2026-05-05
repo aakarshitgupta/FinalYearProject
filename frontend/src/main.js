@@ -120,82 +120,22 @@ function render() {
 
   root.innerHTML = `
     <div class="app-shell">
-      <header class="hero">
-        <div class="hero-copy">
-          <span class="eyebrow">MERN rebuild</span>
+      <header class="app-header">
+        <div>
           <h1>Fake News XAI Studio</h1>
-          <p>
-            Browser-safe frontend, Express API, Python BERT inference, and optional Mongo history.
-          </p>
+          <p>Analyze text with the trained model and view a concise explanation.</p>
         </div>
-        <div class="hero-status">
-          <div class="status-pill">${state.loadingConfig ? "Loading model..." : "API ready"}</div>
-          <div class="status-grid">
-            ${renderMetricCard("Model", state.config?.modelReady ? "Loaded" : "Missing", "#f97316")}
-            ${renderMetricCard(
-              "Eval F1",
-              metrics.eval_f1 ? `${(metrics.eval_f1 * 100).toFixed(1)}%` : "N/A",
-              "#22c55e"
-            )}
-            ${renderMetricCard("Dataset rows", dataset.totalRows ?? "N/A", "#38bdf8")}
-          </div>
-        </div>
+        <span class="status-pill">${state.loadingConfig ? "Loading model..." : "API ready"}</span>
       </header>
 
       ${state.error ? `<div class="error-banner">${escapeHtml(state.error)}</div>` : ""}
 
-      <main class="content-grid">
-        <section class="panel">
+      <main class="main-layout">
+        <section class="panel primary-panel">
           <div class="panel-heading">
             <div>
-              <h2>Model workspace</h2>
-              <p>This section reads your model summary and dataset preview from the API.</p>
-            </div>
-          </div>
-
-          <div class="details-grid">
-            <div class="detail-box">
-              <span>Model directory</span>
-              <strong>${escapeHtml(state.config?.modelDir || "Not configured")}</strong>
-            </div>
-            <div class="detail-box">
-              <span>Explanation methods</span>
-              <strong>LIME and SHAP</strong>
-            </div>
-            <div class="detail-box">
-              <span>Mongo history</span>
-              <strong>${state.history.enabled ? "Enabled" : "Optional / off"}</strong>
-            </div>
-            <div class="detail-box">
-              <span>Training epochs</span>
-              <strong>${escapeHtml(summary.epochs ?? "N/A")}</strong>
-            </div>
-          </div>
-
-          <div class="preview-table">
-            <div class="table-header">
-              <h3>Dataset preview</h3>
-              <span>${escapeHtml(dataset.totalRows ?? 0)} rows available</span>
-            </div>
-            <div class="table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Text</th>
-                    <th>Label</th>
-                  </tr>
-                </thead>
-                <tbody>${renderDatasetRows(dataset.preview || [])}</tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Single analysis</h2>
-              <p>Score a claim, inspect confidence, and review explanation weights.</p>
+              <h2>Analyze article</h2>
+              <p>Paste a claim or article excerpt to check the predicted label.</p>
             </div>
           </div>
 
@@ -259,11 +199,74 @@ function render() {
           }
         </section>
 
-        <section class="panel">
+        <aside class="panel side-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Model status</h2>
+              <p>Quick project health at a glance.</p>
+            </div>
+          </div>
+
+          <div class="status-list">
+            <div>
+              <span>Model</span>
+              <strong>${state.config?.modelReady ? "Loaded" : "Missing"}</strong>
+            </div>
+            <div>
+              <span>Eval F1</span>
+              <strong>${metrics.eval_f1 ? `${(metrics.eval_f1 * 100).toFixed(1)}%` : "N/A"}</strong>
+            </div>
+            <div>
+              <span>Rows</span>
+              <strong>${escapeHtml(dataset.totalRows ?? "N/A")}</strong>
+            </div>
+            <div>
+              <span>History</span>
+              <strong>${state.history.enabled ? "On" : "Off"}</strong>
+            </div>
+          </div>
+
+          <details class="quiet-details">
+            <summary>Dataset preview</summary>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Text</th>
+                    <th>Label</th>
+                  </tr>
+                </thead>
+                <tbody>${renderDatasetRows(dataset.preview || [])}</tbody>
+              </table>
+            </div>
+          </details>
+
+          <details class="quiet-details">
+            <summary>Model details</summary>
+            <dl class="detail-list">
+              <div>
+                <dt>Directory</dt>
+                <dd>${escapeHtml(state.config?.modelDir || "Not configured")}</dd>
+              </div>
+              <div>
+                <dt>Methods</dt>
+                <dd>LIME and SHAP</dd>
+              </div>
+              <div>
+                <dt>Epochs</dt>
+                <dd>${escapeHtml(summary.epochs ?? "N/A")}</dd>
+              </div>
+            </dl>
+          </details>
+        </aside>
+      </main>
+
+      <section class="secondary-layout">
+        <div class="panel">
           <div class="panel-heading">
             <div>
               <h2>Batch screening</h2>
-              <p>Paste one text per line to run multiple predictions in one request.</p>
+              <p>Run several short checks at once.</p>
             </div>
           </div>
 
@@ -294,23 +297,23 @@ function render() {
               `
               : ""
           }
-        </section>
+        </div>
 
-        <section class="panel">
+        <div class="panel">
           <div class="panel-heading">
             <div>
               <h2>Recent history</h2>
-              <p>These records appear only when MongoDB is connected.</p>
+              <p>Saved results appear when MongoDB is connected.</p>
             </div>
           </div>
 
           ${
             state.history.enabled && state.history.items.length
               ? `<div class="history-list">${renderHistoryRows(state.history.items)}</div>`
-              : `<p class="muted-copy">Connect MongoDB to persist analysis history. Without it, the app still supports full inference and explanation.</p>`
+              : `<p class="muted-copy">History is currently off. Analysis still works normally.</p>`
           }
-        </section>
-      </main>
+        </div>
+      </section>
     </div>
   `;
 
