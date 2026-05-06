@@ -1,7 +1,9 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import fs from "node:fs";
 import mongoose from "mongoose";
+import path from "node:path";
 
 import { Analysis } from "./models/Analysis.js";
 import { runPythonBridge } from "./services/pythonBridge.js";
@@ -51,6 +53,34 @@ app.get("/api/health", async (_request, response) => {
     ok: true,
     service: "fake-news-xai-api",
     mongoEnabled,
+  });
+});
+
+app.get("/api/diagnostics", async (_request, response) => {
+  const modelDir = process.env.MODEL_DIR || "";
+  const dataPath = process.env.DATA_PATH || "";
+  const pythonPath = process.env.PYTHON_PATH || "";
+  const modelFile = modelDir ? path.join(modelDir, "model.safetensors") : "";
+
+  response.json({
+    ok: true,
+    env: {
+      port,
+      clientOrigins,
+      pythonPath,
+      modelDir,
+      dataPath,
+    },
+    exists: {
+      pythonPath: Boolean(pythonPath && fs.existsSync(pythonPath)),
+      modelDir: Boolean(modelDir && fs.existsSync(modelDir)),
+      modelFile: Boolean(modelFile && fs.existsSync(modelFile)),
+      dataPath: Boolean(dataPath && fs.existsSync(dataPath)),
+    },
+    sizes: {
+      modelFile:
+        modelFile && fs.existsSync(modelFile) ? fs.statSync(modelFile).size : 0,
+    },
   });
 });
 
