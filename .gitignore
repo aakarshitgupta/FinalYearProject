@@ -2,7 +2,9 @@
 __pycache__/
 .pytest_cache/
 *.pyc
-artifacts/
+artifacts/*
+!artifacts/bert_fake_news_large/
+!artifacts/bert_fake_news_large/**
 .streamlit/
 backend/node_modules/
 frontend/node_modules/

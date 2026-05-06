@@ -1,0 +1,23 @@
+{
+  "model_name": "bert-base-uncased",
+  "data_path": "data\\synthetic_fake_news_large.csv",
+  "label_counts": {
+    "0": 100,
+    "1": 100
+  },
+  "epochs": 1,
+  "batch_size": 8,
+  "learning_rate": 2e-05,
+  "max_length": 256,
+  "test_size": 0.2,
+  "seed": 42,
+  "metrics": {
+    "eval_loss": 0.3194951117038727,
+    "eval_accuracy": 1.0,
+    "eval_f1": 1.0,
+    "eval_runtime": 2.6959,
+    "eval_samples_per_second": 14.837,
+    "eval_steps_per_second": 1.855,
+    "epoch": 1.0
+  }
+}

@@ -1,4 +1,9 @@
 const root = document.getElementById("root");
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+
+function apiPath(path) {
+  return `${apiBaseUrl}${path}`;
+}
 
 const state = {
   config: null,
@@ -369,7 +374,7 @@ function attachEvents() {
 }
 
 async function loadHistory() {
-  const response = await fetch("/api/history");
+  const response = await fetch(apiPath("/api/history"));
   const data = await response.json();
   state.history = {
     enabled: Boolean(data?.enabled),
@@ -379,7 +384,7 @@ async function loadHistory() {
 
 async function loadConfig() {
   try {
-    const response = await fetch("/api/config");
+    const response = await fetch(apiPath("/api/config"));
     const data = await response.json();
     if (!response.ok) {
       throw new Error(data.error || "Failed to load API config.");
@@ -401,7 +406,7 @@ async function handleAnalyze(event) {
   render();
 
   try {
-    const response = await fetch("/api/analyze", {
+    const response = await fetch(apiPath("/api/analyze"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -448,7 +453,7 @@ async function handleBatchAnalyze() {
   render();
 
   try {
-    const response = await fetch("/api/batch", {
+    const response = await fetch(apiPath("/api/batch"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
