@@ -16,11 +16,12 @@ const clientOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:5173")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
+const allowAnyOrigin = clientOrigins.includes("*");
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || clientOrigins.includes(origin)) {
+      if (allowAnyOrigin || !origin || clientOrigins.includes(origin)) {
         callback(null, true);
         return;
       }
